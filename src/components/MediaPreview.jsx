@@ -17,12 +17,12 @@ const MediaPreview = ({ item, alt }) => {
 
   if (item.type === "video" && !videoActive) {
     return (
-      <button
-        type="button"
+      <div
+        className="relative block h-full w-full cursor-pointer"
         onMouseEnter={() => setVideoActive(true)}
         onFocus={() => setVideoActive(true)}
-        onClick={() => setVideoActive(true)}
-        className="relative block h-full w-full cursor-pointer text-left"
+        tabIndex={0}
+        role="button"
         aria-label="Preview video"
       >
         <img
@@ -40,7 +40,7 @@ const MediaPreview = ({ item, alt }) => {
             ▶
           </span>
         </span>
-      </button>
+      </div>
     )
   }
 
