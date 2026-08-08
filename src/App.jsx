@@ -1,23 +1,20 @@
 import { Route, Routes } from "react-router-dom"
-import ResultGrid from "./components/ResultGrid"
-import SearchBar from "./components/SearchBar"
-import Tabs from "./components/Tabs"
-import HomePage from "./pages/HomePage"
-import CollectionPage from "./pages/CollectionPage"
+import { ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
 import Navbar from "./components/Navbar"
-import { ToastContainer, toast } from "react-toastify"
-const App = () => {
-  return <div className= "min-w-screen min-h-screen bg-gray-950 text-white">
-    <div>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/collection" element={<CollectionPage />} />
-      </Routes>
+import CollectionPage from "./pages/CollectionPage"
+import HomePage from "./pages/HomePage"
 
-      <ToastContainer />
-    </div>
+const App = () => (
+  <div className="min-h-screen bg-slate-950 text-white">
+    <Navbar />
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/collection" element={<CollectionPage />} />
+      <Route path="*" element={<HomePage />} />
+    </Routes>
+    <ToastContainer position="top-center" newestOnTop theme="dark" closeOnClick pauseOnHover />
   </div>
-  
-}
+)
+
 export default App
