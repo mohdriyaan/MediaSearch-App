@@ -5,6 +5,8 @@ import { fetchGifs, fetchPhotos, fetchVideos } from "../api/mediaApi"
 import { setError, setLoading, setResults } from "../redux/features/searchSlice"
 import { ResultCard } from "./ResultCard"
 
+const RESULT_LIMIT = 16
+
 const ResultGrid = () => {
   const { query, activeTab, results, loading, error } = useSelector((store) => store.search)
   const dispatch = useDispatch()
@@ -21,7 +23,7 @@ const ResultGrid = () => {
         let data = []
 
         if (activeTab === "photos") {
-          const response = await fetchPhotos(query.trim(), 1, 20, controller.signal)
+          const response = await fetchPhotos(query.trim(), 1, RESULT_LIMIT, controller.signal)
           data = response.results.map((item) => ({
             id: item.id,
             key: `photo:${item.id}`,
@@ -29,16 +31,20 @@ const ResultGrid = () => {
             title: item.alt_description || item.description || "Untitled photo",
             thumbnail: item.urls?.small,
             src: item.urls?.full || item.urls?.regular,
+            downloadUrl: item.urls?.full || item.urls?.regular,
             url: item.links?.html,
           })).filter((item) => item.thumbnail && item.src)
         }
 
         if (activeTab === "videos") {
-          const response = await fetchVideos(query.trim(), 20, controller.signal)
+          const response = await fetchVideos(query.trim(), RESULT_LIMIT, controller.signal)
           data = response.videos.map((item) => {
-            const file = [...(item.video_files || [])]
-              .filter((candidate) => candidate?.link)
-              .sort((a, b) => (b.width || 0) - (a.width || 0))[0]
+            const files = [...(item.video_files || [])]
+              .filter((candidate) => candidate?.link && candidate?.width)
+              .sort((a, b) => (a.width || 0) - (b.width || 0))
+
+            const previewFile = files.find((file) => file.width >= 480 && file.width <= 960) || files[0]
+            const downloadFile = files[files.length - 1] || previewFile
 
             return {
               id: item.id,
@@ -46,21 +52,24 @@ const ResultGrid = () => {
               type: "video",
               title: item.user?.name ? `Video by ${item.user.name}` : "Untitled video",
               thumbnail: item.image,
-              src: file?.link,
+              previewSrc: previewFile?.link,
+              src: downloadFile?.link,
+              downloadUrl: downloadFile?.link,
               url: item.url,
             }
           }).filter((item) => item.thumbnail && item.src)
         }
 
         if (activeTab === "GIFS") {
-          const response = await fetchGifs(query.trim(), 20, controller.signal)
+          const response = await fetchGifs(query.trim(), RESULT_LIMIT, controller.signal)
           data = response.data.map((item) => ({
             id: item.id,
             key: `gif:${item.id}`,
             type: "gif",
             title: item.title || "Untitled GIF",
-            thumbnail: item.images?.fixed_width_small?.url || item.images?.preview_gif?.url,
+            thumbnail: item.images?.fixed_width?.url || item.images?.fixed_width_small?.url || item.images?.preview_gif?.url,
             src: item.images?.original?.url || item.images?.original_mp4?.mp4,
+            downloadUrl: item.images?.original?.url || item.images?.original_mp4?.mp4,
             url: item.url,
           })).filter((item) => item.thumbnail && item.src)
         }
