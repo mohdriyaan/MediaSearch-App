@@ -4,35 +4,30 @@ const sanitizeFilename = (value) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 80) || "media"
 
-const extensionFromType = (type) => {
+const extensionFromUrl = (url, type) => {
+  const cleanUrl = String(url || "").split("?")[0].toLowerCase()
+  const match = cleanUrl.match(/\.([a-z0-9]{2,5})$/)
+
+  if (match) return match[1] === "jpeg" ? "jpg" : match[1]
   if (type === "video") return "mp4"
   if (type === "gif") return "gif"
   return "jpg"
 }
 
 export const downloadMedia = async (item) => {
-  if (!item?.src) throw new Error("This media does not have a downloadable URL.")
+  const url = item?.downloadUrl || item?.src
+  if (!url) throw new Error("This media does not have a downloadable URL.")
 
-  const filename = `${sanitizeFilename(item.title || `${item.type}-media`)}.${extensionFromType(item.type)}`
+  const filename = `${sanitizeFilename(item.title || `${item.type}-media`)}.${extensionFromUrl(url, item.type)}`
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+  link.target = "_blank"
+  link.rel = "noopener noreferrer"
+  link.style.display = "none"
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
 
-  try {
-    const response = await fetch(item.src, { mode: "cors" })
-    if (!response.ok) throw new Error(`Download failed with status ${response.status}.`)
-
-    const blob = await response.blob()
-    const objectUrl = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = objectUrl
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    link.remove()
-    setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
-    return { downloaded: true }
-  } catch {
-    // Some third-party CDNs intentionally block browser-side CORS requests.
-    // Opening the source URL is the safest fallback and lets the provider handle access.
-    window.open(item.src, "_blank", "noopener,noreferrer")
-    return { downloaded: false, fallback: true }
-  }
+  return { downloaded: true, native: true }
 }
