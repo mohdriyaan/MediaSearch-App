@@ -1,12 +1,33 @@
 @import "tailwindcss";
 
-*{
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+  background: #020617;
 }
 
-:root{
-  --c1 : rgb(12, 43, 78);
-  --c2 : rgb(26, 61, 100);
-  --c3 : rgb(29, 84, 108);
-  --c4 : rgb(244, 244, 244)
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: #020617;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background: #020617;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgb(99 102 241 / 0.35);
 }
