@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { clearResults, setQuery } from "../redux/features/searchSlice"
 
@@ -6,8 +6,6 @@ const SearchBar = () => {
   const query = useSelector((state) => state.search.query)
   const [text, setText] = useState(query)
   const dispatch = useDispatch()
-
-  useEffect(() => setText(query), [query])
 
   const submitHandler = (event) => {
     event.preventDefault()
@@ -41,10 +39,12 @@ const SearchBar = () => {
           type="search"
           placeholder="Search anything..."
           autoComplete="off"
+          aria-describedby={query ? "current-search" : undefined}
         />
         {text && <button type="button" onClick={clearSearch} className="rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-slate-300 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40">Clear</button>}
         <button type="submit" className="rounded-xl bg-indigo-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 active:scale-[0.98]">Search</button>
       </form>
+      {query && <p id="current-search" className="sr-only">Current search: {query}</p>}
     </section>
   )
 }
