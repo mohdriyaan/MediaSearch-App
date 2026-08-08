@@ -121,8 +121,10 @@ export const downloadMedia = async (item) => {
     try {
       handle = await getSaveFileHandle(initialFilename, urlExtension || initialExtension)
     } catch (error) {
-      if (error?.name === "AbortError") throw new Error("Download cancelled.")
-      throw new Error("The save dialog could not be opened. Please try again.")
+      if (error?.name === "AbortError") {
+        throw new Error("Download cancelled.", { cause: error })
+      }
+      throw new Error("The save dialog could not be opened. Please try again.", { cause: error })
     }
 
     let response
@@ -135,9 +137,9 @@ export const downloadMedia = async (item) => {
       return { downloaded: true, native: true, filename, method: "file-picker" }
     } catch (error) {
       if (error?.name === "AbortError") {
-        throw new Error("The download timed out. Please try again.")
+        throw new Error("The download timed out. Please try again.", { cause: error })
       }
-      throw new Error("This provider blocked the browser download. Please try another result.")
+      throw new Error("This provider blocked the browser download. Please try another result.", { cause: error })
     }
   }
 
@@ -146,8 +148,10 @@ export const downloadMedia = async (item) => {
   try {
     response = await fetchWithRetry(url)
   } catch (error) {
-    if (error?.name === "AbortError") throw new Error("The download timed out. Please try again.")
-    throw new Error("This provider blocked the browser download. Please try another result.")
+    if (error?.name === "AbortError") {
+      throw new Error("The download timed out. Please try again.", { cause: error })
+    }
+    throw new Error("This provider blocked the browser download. Please try another result.", { cause: error })
   }
 
   try {
@@ -157,7 +161,7 @@ export const downloadMedia = async (item) => {
     const filename = `${sanitizeFilename(item.title || `${item.type}-media`)}.${extension}`
     await saveBlobWithDownload(blob, filename)
     return { downloaded: true, native: true, filename, method: "browser-download" }
-  } catch {
-    throw new Error("The browser could not save this file. Please try another result.")
+  } catch (error) {
+    throw new Error("The browser could not save this file. Please try another result.", { cause: error })
   }
 }
