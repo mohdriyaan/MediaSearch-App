@@ -23,9 +23,9 @@ export const ResultCard = ({ item }) => {
     setDownloading(true)
     try {
       const result = await downloadMedia(item)
-      toast.info(result.fallback ? "Opened the source media" : "Download started", { autoClose: 1800, theme: "dark" })
+      toast.success(result.method === "file-picker" ? `Saved ${result.filename}` : "Download started", { autoClose: 2000, theme: "dark" })
     } catch (error) {
-      toast.error(error.message || "Unable to download this media.", { autoClose: 2200, theme: "dark" })
+      toast.error(error.message || "Unable to download this media.", { autoClose: 2600, theme: "dark" })
     } finally {
       window.setTimeout(() => setDownloading(false), 500)
     }
