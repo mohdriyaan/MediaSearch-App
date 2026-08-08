@@ -22,7 +22,7 @@ const SearchBar = () => {
     dispatch(clearResults())
   }
 
-  const useSuggestion = (suggestion) => {
+  const handleSuggestion = (suggestion) => {
     setText(suggestion)
     dispatch(setQuery(suggestion))
   }
@@ -67,7 +67,7 @@ const SearchBar = () => {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
           <span className="mr-1 text-xs font-medium text-slate-600">Try</span>
           {suggestions.map((suggestion) => (
-            <button key={suggestion} type="button" onClick={() => useSuggestion(suggestion)} className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-xs font-semibold text-slate-400 transition hover:border-indigo-400/30 hover:bg-indigo-400/10 hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-300/50">
+            <button key={suggestion} type="button" onClick={() => handleSuggestion(suggestion)} className="rounded-full border border-white/[0.08] bg-white/[0.025] px-3 py-1.5 text-xs font-semibold text-slate-400 transition hover:border-indigo-400/30 hover:bg-indigo-400/10 hover:text-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-300/50">
               {suggestion}
             </button>
           ))}
